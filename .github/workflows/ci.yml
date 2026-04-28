@@ -1,0 +1,46 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    name: ${{ matrix.os }} / Python ${{ matrix.python-version }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        python-version: ["3.10", "3.11", "3.12", "3.13"]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install package
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e .[all,dev]
+
+      - name: Run tests
+        env:
+          PYTEST_DISABLE_PLUGIN_AUTOLOAD: "1"
+        run: python -m pytest
+
+      - name: Check import boundaries
+        run: python scripts/check_import_boundaries.py
+
+      - name: Compile sources
+        run: python -m compileall -q src tests examples scripts
+
+      - name: Run examples
+        run: |
+          python examples/01_basic_processing.py --output-dir examples/_outputs/01_basic_processing
+          python examples/01_basic_processing_zh.py --output-dir examples/_outputs/01_basic_processing_zh
+
+      - name: Build package
+        run: python -m build
