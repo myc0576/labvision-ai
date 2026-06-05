@@ -37,5 +37,5 @@ def save_colormapped(path: str | Path, image: np.ndarray, *, palette: str = "mag
         raise ImportError("Saving colormapped images requires optional extra '[viz]' or '[image]'") from exc
     target = Path(path)
     target.parent.mkdir(parents=True, exist_ok=True)
-    Image.fromarray(apply_colormap(image, palette=palette), mode="RGB").save(target)
+    Image.fromarray(apply_colormap(image, palette=palette)).save(target)
     return target

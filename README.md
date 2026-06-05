@@ -1,26 +1,30 @@
 # LabVision AI
 
-LabVision AI is a small, installable MIT-licensed core package for reproducible laboratory image processing. The current public release is intentionally non-AI: it provides clean-room image IO, preprocessing, normalization, ROI cropping, colormaps, overlays, triptychs, manifests, and Markdown summaries.
+[![CI](https://github.com/YOUR_USERNAME/labvision-ai/actions/workflows/ci.yml/badge.svg)](https://github.com/YOUR_USERNAME/labvision-ai/actions/workflows/ci.yml)
+[![PyPI version](https://img.shields.io/pypi/v/labvision-ai.svg)](https://pypi.org/project/labvision-ai/)
+[![Python 3.10+](https://img.shields.io/pypi/pyversions/labvision-ai.svg)](https://pypi.org/project/labvision-ai/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-Domain-specific workflows, figure-layout exporters, hosted AI features, paid licensing, and package-index uploads are deferred until their ownership and product boundaries are reviewed separately.
+A lightweight, MIT-licensed Python package for reproducible laboratory image processing.
+Clean-room design: no AI, no network calls, no vendor lock-in — just fast, auditable image pipelines.
+
+## Why LabVision AI?
+
+- **Minimal dependencies**: Base install requires only NumPy. Image readers and visualization load their extras at call time.
+- **Clean API**: 9 functions + 2 dataclasses. Learn in 5 minutes.
+- **Reproducible**: Every pipeline emits a JSON manifest and Markdown summary.
+- **MIT licensed**: Use it anywhere — academic, commercial, embedded.
 
 ## Install
 
-```powershell
-python -m pip install .
-python -m pip install .[image,viz]
-python -m pip install .[all,dev]
+```bash
+pip install labvision-ai              # base (NumPy only)
+pip install labvision-ai[image]       # + Pillow, tifffile
+pip install labvision-ai[viz]         # + matplotlib, Pillow
+pip install labvision-ai[all,dev]     # everything + test tooling
 ```
 
-Base import is lightweight and depends only on NumPy:
-
-```python
-import labvision as lv
-```
-
-Optional image readers and visualization output load Pillow, tifffile, or Matplotlib only when the relevant function is called.
-
-## Public API
+## Quick Start
 
 ```python
 import labvision as lv
@@ -35,41 +39,37 @@ overlay = lv.compose_overlay(average, normalized, alpha=0.45)
 triptych = lv.make_triptych([average, normalized, overlay], labels=["avg", "norm", "overlay"])
 ```
 
-Stable top-level exports:
+## Public API
 
-- `read_image`
-- `read_stack`
-- `ImageStack`
-- `subtract_background`
-- `time_average`
-- `normalize`
-- `apply_colormap`
-- `compose_overlay`
-- `make_triptych`
-
-## Examples
-
-```powershell
-python examples/01_basic_processing.py --output-dir examples/_outputs/01_basic_processing
-python examples/01_basic_processing_zh.py --output-dir examples/_outputs/01_basic_processing_zh
-```
-
-The examples generate deterministic synthetic arrays plus PNG, NPY, JSON manifest, and Markdown summary outputs.
+| Function | Description |
+|----------|-------------|
+| `read_image(path)` | Read a single image as float32 grayscale array |
+| `read_stack(path)` | Read a file or directory as `ImageStack` |
+| `ImageStack` | Named tuple: `.frames`, `.source_path`, `.files`, `.frame_count` |
+| `subtract_background(stack, mode)` | Background subtraction (`"none"`, `"min"`, `"percentile_N"`) |
+| `time_average(stack)` | Temporal mean across frames |
+| `normalize(plane, method)` | Normalize 2D plane (`"minmax"`, `"mean"`, `"max"`, `"percentile_NN"`) |
+| `apply_colormap(image, palette)` | Apply matplotlib colormap with graceful fallback |
+| `compose_overlay(base, signal, alpha)` | Blend grayscale base with colormapped signal |
+| `make_triptych(images, labels)` | 3-panel horizontal figure with optional labels |
 
 ## Verification
 
-```powershell
-python -m pip install -e .[all,dev]
-$env:PYTEST_DISABLE_PLUGIN_AUTOLOAD='1'
-python -m pytest
+```bash
+git clone https://github.com/YOUR_USERNAME/labvision-ai.git
+cd labvision-ai
+python -m pip install -e ".[all,dev]"
+python -m pytest -v
 python scripts/check_import_boundaries.py
-python -m compileall -q src tests examples scripts
-powershell -ExecutionPolicy Bypass -File scripts/run_examples.ps1
-python -m build
 ```
 
-## Scope Notes
+## Scope
 
-This repository is prepared for public GitHub browsing, installation, and testing as an open core package. It is not configured for package-index upload in this release.
+This is the **open core** — image I/O, preprocessing, colormaps, overlays, triptychs, manifests.
+Domain-specific workflows, hosted AI features, and paid integrations are intentionally deferred.
 
-Historical provenance records are kept under `docs/provenance/` so future maintainers can see which legacy-dependent features were deferred instead of shipped.
+See `docs/provenance/` for historical decisions on what was deferred and why.
+
+## License
+
+MIT — see [LICENSE](./LICENSE).

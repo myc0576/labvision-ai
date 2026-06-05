@@ -23,7 +23,7 @@ def make_triptych(images: Sequence[np.ndarray], *, labels: Sequence[str] | None 
             from PIL import Image, ImageDraw
         except Exception:
             return canvas
-        image = Image.fromarray(canvas, mode="RGB")
+        image = Image.fromarray(canvas)
         draw = ImageDraw.Draw(image)
         offsets = [0, width + 4, 2 * (width + 4)]
         for label, x in zip(labels, offsets, strict=False):

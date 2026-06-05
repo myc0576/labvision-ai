@@ -27,5 +27,5 @@ def save_rgb_image(path: str | Path, rgb: np.ndarray) -> Path:
         raise ValueError("Expected RGB image shape (height, width, 3)")
     target = Path(path)
     target.parent.mkdir(parents=True, exist_ok=True)
-    Image.fromarray(data.astype(np.uint8), mode="RGB").save(target)
+    Image.fromarray(data.astype(np.uint8)).save(target)
     return target
